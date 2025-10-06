@@ -6,7 +6,7 @@ def request_api_data(query_char):
     # Password API URL + our password input
     url = 'https://api.pwnedpasswords.com/range/' + query_char
     response = requests.get(url)
-    # <Response [200]> is desired, not [400]
+
     # print(response.status_code)
     if response.status_code != 200:
         raise RuntimeError(f'Error fetching: {response.status_code}, Check the API and try again.')
@@ -17,16 +17,13 @@ def request_api_data(query_char):
     return response
 
 def pwned_api_check(password):
-    # sha1password = hashlib.sha1(password.encode('utf-8')).hexdig
-    # pass
-
-    # Note: Unicode-objects must be encoded into hexadecimal digits (base 16) before hashing.
+    # Note: Unicode-objects must be encoded into utf-8 (binary) before hashing.
 
     # Encodes the password string as as Binary. Password string will be in UTF-8 format before going through Hash Function / Algorithm.
     print(password.encode('utf-8'))
     pw_encoded_in_utf8 = password.encode('utf-8')
 
-    # SHA1 hash password (gibberish) (hex digits (base 16) only as double length string) (everything in uppercase)
+    # SHA1 hash password (gibberish) (hex digits (base 16)) (everything in uppercase)
     print(hashlib.sha1(pw_encoded_in_utf8).hexdigest().upper())
     sha1_pw_in_hex_digits = hashlib.sha1(pw_encoded_in_utf8).hexdigest().upper()
 
@@ -41,17 +38,18 @@ def pwned_api_check(password):
 
 def read_response(response):
     # Note: Number at the end of the response (from PASSWORD API URL) = HOW MANY TIMES the password was hacked / pwned
-    # response.text = gives us ALL of the SHA1 HASHED passwords that MATCH our SHA1 HASHED password/output (from SHA1 Hash Algorithm / hashlib)
+    # response.text = gives us ALL of the SHA1 HASHED passwords that MATCH our SHA1 HASHED password (from SHA1 Hash Algorithm / hashlib)
     print(response.text)
 
 
 def get_password_leaks_count(hashes_from_api, our_pw_hash_to_check):
     """
-    Split response (from Password API URL) (that we get AFTER we send the first 5 characters of our SHA1 Hash Output (from SHA1 Hash Alg / hashlib module))into 2 parts (a tuple of ()):
-        1) SHA1 Hash Output (from SHA1 Hash Algorithm / hashlib)
-        2) # of times the password was hacked / pwned
+    Split response (from Password API URL) (that we get AFTER we send the first 5 characters of our SHA1 Hash Alg Output (from hashlib module)) into 2 parts (a tuple of ()):
+        1) Suffix of every Hashed Passwords beginning with the specified prefix
+        2) # of times the password hash (with with same First 5 characters) appears in the data set)
+    If appeared in list of previously breached passwords, then our password has been previously hacked / pwned.
     """
-    # Convert response (from Password API URL) into a tuple.
+    # Convert response (from Pwned Passwords API URL) into a tuple.
     hashes_from_api = (line.split(':') for line in hashes_from_api.text.splitlines())
     # print(hashes)
 
@@ -62,7 +60,7 @@ def get_password_leaks_count(hashes_from_api, our_pw_hash_to_check):
         if h == our_pw_hash_to_check:
             return count
 
-    # If there's no password match, return 0, meaning that our password does not exist in web API list of leaked/hacked passwords.
+    # If there's no password match, return 0, meaning that our password does not exist in API list of breached passwords.
     return 0
 
 # request_api_data('123')
