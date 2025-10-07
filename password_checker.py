@@ -54,7 +54,7 @@ def get_password_leaks_count(hashes_from_api, our_pw_hash_to_check):
     # print(hashes)
 
     for h, count in hashes_from_api:
-        print(h, count)
+        print(f'Suffix of Password Hash beginning with specified prefix: {h} - Password prefix appeared in data set {count} times')
 
         # Check if our hashed password (tail = hash to check) matches any entry from the list of hashed passwords from API.
         if h == our_pw_hash_to_check:
@@ -63,5 +63,13 @@ def get_password_leaks_count(hashes_from_api, our_pw_hash_to_check):
     # If there's no password match, return 0, meaning that our password does not exist in API list of breached passwords.
     return 0
 
-# request_api_data('123')
-pwned_api_check('123')
+
+def main():
+    password_input = input("Please enter a password to see if it ever got pwned / hacked: ")
+
+    # # request_api_data('123')
+    pwned_api_check(password_input)
+
+
+if __name__ == "__main__":
+    main()
