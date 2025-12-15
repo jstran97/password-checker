@@ -68,7 +68,8 @@ def main():
     password_input = input("Please enter a password to see if it ever got pwned / hacked: ")
 
     # # request_api_data('123')
-    pwned_api_check(password_input)
+    num_time_password_prefix_appeared = pwned_api_check(password_input)
+    print(f'Number of times our Password Prefix appeared: {num_time_password_prefix_appeared}')
 
 
 if __name__ == "__main__":
